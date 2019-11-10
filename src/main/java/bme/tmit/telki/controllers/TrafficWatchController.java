@@ -1,5 +1,6 @@
 package bme.tmit.telki.controllers;
 
+import bme.tmit.telki.distance_matrix.DistanceMatrixClient;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,16 @@ public class TrafficWatchController {
     @GetMapping("/")
     public String greeting(Model model) {
         model.addAttribute("name", "Hunor");    // model attributes are accessible from views
+        return "main";
+    }
+
+    @GetMapping("/traffic")
+    public String trafficRequest(Model model) {
+        model.addAttribute("name", "traffic");
+
+        DistanceMatrixClient distanceMatrixClient = new DistanceMatrixClient();
+        distanceMatrixClient.sendApiRequest();
+
         return "main";
     }
 }

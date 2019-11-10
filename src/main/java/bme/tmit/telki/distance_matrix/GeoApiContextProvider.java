@@ -14,7 +14,7 @@ import com.google.maps.GeoApiContext;
  */
 public class GeoApiContextProvider {
 
-    private final String API_KEY = "AIzaSyBcJixlXHjzXIc0McRXeGtaEDp_jQh9Ef0";
+    private final String API_KEY = DMInfo.KEY;
     private static GeoApiContextProvider contextProvider = null;
     public GeoApiContext context;
 

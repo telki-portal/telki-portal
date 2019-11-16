@@ -3,6 +3,8 @@ package bme.tmit.telki.distance_matrix;
 import com.google.maps.DistanceMatrixApi;
 import com.google.maps.model.*;
 
+import java.time.Instant;
+
 /**
  * Komment:
  *
@@ -52,6 +54,8 @@ public class DistanceMatrixClient {
                 .origins(telki_center)
                 .destinations(szell_kalman, petofi_hid_budai)
                 .mode(TravelMode.DRIVING)
+                .departureTime(Instant.now())
+                .trafficModel(TrafficModel.BEST_GUESS)
                 .awaitIgnoreError();
 
 
@@ -59,7 +63,7 @@ public class DistanceMatrixClient {
         for (DistanceMatrixRow row :distanceMatrix.rows) {
             System.out.println(row.toString());
             for (DistanceMatrixElement element : row.elements) {
-                System.out.println("Időtartam: " + element.duration +", Távolság: " + element.distance);
+                System.out.println("InTraffic: " + element.durationInTraffic + ", Időtartam: " + element.duration +", Távolság: " + element.distance);
             }
         }
 

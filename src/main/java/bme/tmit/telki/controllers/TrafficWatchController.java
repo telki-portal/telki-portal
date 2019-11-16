@@ -1,9 +1,12 @@
 package bme.tmit.telki.controllers;
 
-import bme.tmit.telki.distance_matrix.DistanceMatrixClient;
+import bme.tmit.telki.data.InfluxDBConnection;
+import bme.tmit.telki.data.TrafficInfoEntry;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 /**
  * MVC controller for application.
@@ -23,22 +26,10 @@ public class TrafficWatchController {
     }
 
     @GetMapping("/traffic")
-    public String trafficRequest(Model model) {
-        model.addAttribute("name", "traffic");
+    public String trafficPage(Model model) {
+        List<TrafficInfoEntry> entries = InfluxDBConnection.getEntries();
+        model.addAttribute("entries", entries);
 
-        DistanceMatrixClient distanceMatrixClient = new DistanceMatrixClient();
-        //distanceMatrixClient.sendApiRequest();
-        distanceMatrixClient.Telki_Budapest_22_00();
-        distanceMatrixClient.Telki_Budapest_00_04();
-        distanceMatrixClient.Telki_Budapest_04_06();
-        distanceMatrixClient.Telki_Budapest_06_12();
-        distanceMatrixClient.Telki_Budapest_12_22();
-
-        distanceMatrixClient.Budapest_Telki_00_06();
-        distanceMatrixClient.Budapest_Telki_06_14();
-        distanceMatrixClient.Budapest_Telki_14_20();
-        distanceMatrixClient.Budapest_Telki_20_24();
-
-        return "main";
+        return "traffic";
     }
 }

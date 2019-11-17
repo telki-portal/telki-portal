@@ -13,7 +13,7 @@ Ha nem automatikusan nem buildel, akkor kézzel indítani egy gradle build-et.<b
 Ez után a springboot alkalmazás a run gombbal indul<br>
 ![run](res/3.JPG?raw=true "Run")
 
-##API kulcs
+## API kulcs
 A projekt gyökér mappájában létre kell hozni egy **secret.config** nevű fájlt ami tartalmazza a kulcsot ilyen formábban:<br>
 (a **sample-secret.config** fájl mintájára)
 > key:AIzaGoogleApiKeyHere
@@ -35,5 +35,5 @@ Ezután a spring app létre tud hozni magának táblát és menti bele az adatok
 > SELECT * FROM traveltime<br>
 > AUTH<br>
 
-##Felület
+## Felület
 http://localhost:8080/traffic

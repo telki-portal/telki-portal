@@ -118,13 +118,14 @@ public class DistanceMatrixClient {
                 .trafficModel(TrafficModel.BEST_GUESS)
                 .awaitIgnoreError();
 
-        System.out.println(distanceMatrix.toString());
+        /*System.out.println(distanceMatrix.toString());
         for (DistanceMatrixRow row :distanceMatrix.rows) {
             System.out.println(row.toString());
             for (DistanceMatrixElement element : row.elements) {
                 System.out.println("InTraffic: " + element.durationInTraffic + ", Időtartam: " + element.duration +", Távolság: " + element.distance);
             }
-        }
+        }*/
+
         InfluxDBConnection.saveEntry(
                 new TrafficInfoEntry(null, "szell_kalman", "telki_center", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds/60));
         InfluxDBConnection.saveEntry(

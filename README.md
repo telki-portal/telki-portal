@@ -40,9 +40,9 @@ http://localhost:8080/traffic
 
 ## Futtatás parancssorból
 1. Gradle-el:
-    > gradle bootRun
+    > gradle bootRun OR gradlew bootRun
 2. Buildelt .jar fájlból:<br>
 Az api kulcsot tartalmazó secret.config fájlt a futtatott jar fájl mellé is be kell tenni.
-    > gradle build<br>
+    > gradle build OR gradlew build<br>
     java -jar build\libs\telki-0.0.1-SNAPSHOT.jar
 

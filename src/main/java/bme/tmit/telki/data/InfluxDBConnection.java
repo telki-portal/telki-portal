@@ -73,4 +73,6 @@ public class InfluxDBConnection {
         InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
         return resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
     }
+
+    //SELECT destination, min(timeintraffic) AS fasetest_route FROM traveltime WHERE "origin"='telki_center' GROUP BY time(10m) fill(none)
 }

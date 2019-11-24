@@ -7,19 +7,17 @@ import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.influxdb.impl.InfluxDBResultMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static bme.tmit.telki.TelkiPortalApplication.LOG;
 
 /**
  * Singleton class
  * Handles database connection.
  */
 public class InfluxDBConnection {
-    private static final Logger LOG = LoggerFactory.getLogger(InfluxDBConnection.class);
-    public static final String measurement_name = "traveltime";
 
     private static InfluxDBConnection connectionProvider = null;
     private static InfluxDB connection;
@@ -28,6 +26,7 @@ public class InfluxDBConnection {
     private static final String username = "root";
     private static final String password = "root";
     private static final String database_name = "testdb";
+    public static final String measurement_name = "traveltime";
 
     private InfluxDBConnection() {
         connection = InfluxDBFactory.connect(url, username, password);
@@ -43,8 +42,9 @@ public class InfluxDBConnection {
 
         //create / use database
         if (!connection.databaseExists(database_name)) {
+            LOG.debug("Creating database " + database_name);
             connection.createDatabase(database_name);
-            connection.createRetentionPolicy("defaultPolicy", database_name, "30d", 1, true); //todo ??
+            connection.createRetentionPolicy("defaultPolicy", database_name, "30d", 1, true); //todo
         }
         connection.setDatabase(database_name);
     }
@@ -62,11 +62,13 @@ public class InfluxDBConnection {
                 .addField("destination", entry.getDest())
                 .addField("timeintraffic", entry.getInTraffic())
                 .build();
+        LOG.debug("[QUERY] INSERT " + point.lineProtocol());
         getConnection().write(point);
     }
 
     public static List<TrafficInfoEntry> getEntries() {
-        Query q = new Query("Select * from " + measurement_name, database_name);
+        Query q = new Query("SELECT * FROM " + measurement_name, database_name);
+        LOG.debug("[QUERY] " + q.getCommand());
         QueryResult queryResult = getConnection()
                 .query(q);
 
@@ -75,4 +77,5 @@ public class InfluxDBConnection {
     }
 
     //SELECT destination, min(timeintraffic) AS fasetest_route FROM traveltime WHERE "origin"='telki_center' GROUP BY time(10m) fill(none)
+    // insert traveltime,origin="telki",destination="szell" timeintraffic=21i
 }

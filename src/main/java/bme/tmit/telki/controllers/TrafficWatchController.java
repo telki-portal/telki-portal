@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
+import static bme.tmit.telki.TelkiPortalApplication.distanceMatrixClient;
+
 /**
  * MVC controller for application.
  */
@@ -19,17 +21,23 @@ public class TrafficWatchController {
      * @param model Provided by Spring
      * @return view name as String (resources/templates/[view_name].html)
      */
-    @GetMapping("/")
+/*    @GetMapping("/")
     public String greeting(Model model) {
         model.addAttribute("name", "Hunor");    // model attributes are accessible from views
         return "main";
-    }
+    }*/
 
-    @GetMapping("/traffic")
+    @GetMapping("/")
     public String trafficPage(Model model) {
         List<TrafficInfoEntry> entries = InfluxDBConnection.getEntries();
         model.addAttribute("entries", entries);
 
         return "traffic";
+    }
+
+    @GetMapping("/request")
+    public String forceRequest(Model model) {
+        distanceMatrixClient.requestTelkiBudapest();
+        return "main";
     }
 }

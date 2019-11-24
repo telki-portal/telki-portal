@@ -9,10 +9,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class TelkiPortalApplication {
 
+	public static DistanceMatrixClient distanceMatrixClient = null;
+
 	public static void main(String[] args) {
 		SpringApplication.run(TelkiPortalApplication.class, args);
 
-		DistanceMatrixClient distanceMatrixClient = new DistanceMatrixClient(); //starts scheduled tasks
+		distanceMatrixClient = new DistanceMatrixClient(); //starts scheduled tasks
 		//distanceMatrixClient.sendApiRequest();
         /*
         distanceMatrixClient.Telki_Budapest_22_00();

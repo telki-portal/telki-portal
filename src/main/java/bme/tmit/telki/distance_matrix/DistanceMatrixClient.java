@@ -56,6 +56,18 @@ import static bme.tmit.telki.TelkiPortalApplication.LOG;
 @Component
 
 public class DistanceMatrixClient {
+    public enum place {
+        telki_center, szell_kalman, petofi_hid_budai
+    }
+    public static place parsePlace(String str) {
+        switch (str) {
+            case "telki_center": return place.telki_center;
+            case "szell_kalman": return place.szell_kalman;
+            case "petofi_hid_budai": return place.petofi_hid_budai;
+        }
+        return null;
+    }
+
     private final LatLng telki_center = new LatLng(47.5468889, 18.8283889);     // https://www.google.com/maps/@47.5475926,18.8278371,16.5z/data=!4m5!3m4!1s0x0:0x0!8m2!3d47.5468889!4d18.8283889
     private final LatLng szell_kalman = new LatLng(47.5077219, 19.0227367);     // https://www.google.com/maps/@47.507037,19.0216853,17z/data=!4m5!3m4!1s0x4741dea0e74e6c29:0xcbcc12dee29046e7!8m2!3d47.5077219!4d19.0227367
     private final LatLng petofi_hid_budai = new LatLng(47.4769369, 19.0594951); // https://www.google.com/maps/@47.4769405,19.0573064,17z/data=!3m1!4b1!4m5!3m4!1s0x4741ddab5b203951:0xf3231c10b7b810b1!8m2!3d47.4769369!4d19.0594951

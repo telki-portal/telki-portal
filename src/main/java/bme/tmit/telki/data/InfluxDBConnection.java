@@ -1,5 +1,6 @@
 package bme.tmit.telki.data;
 
+import bme.tmit.telki.distance_matrix.DistanceMatrixClient;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
@@ -68,6 +69,16 @@ public class InfluxDBConnection {
 
     public static List<TrafficInfoEntry> getEntries() {
         Query q = new Query("SELECT * FROM " + measurement_name, database_name);
+        LOG.debug("[QUERY] " + q.getCommand());
+        QueryResult queryResult = getConnection()
+                .query(q);
+
+        InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
+        return resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
+    }
+
+    public static List<TrafficInfoEntry> getRouteInfo(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
+        Query q = new Query("SELECT * FROM " + measurement_name + " WHERE \"origin\" = '" + from.name() + "' AND \"destination\" = '" + to.name() + "'", database_name);
         LOG.debug("[QUERY] " + q.getCommand());
         QueryResult queryResult = getConnection()
                 .query(q);

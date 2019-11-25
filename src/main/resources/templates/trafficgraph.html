@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="En">
+<head>
+    <title>Traffic info</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+</head>
+<body class="container">
+<div class="row">
+    <div class="col">
+        <canvas id="myChart" width="400" height="200"></canvas>
+        <br>
+        <button id="addDataset">Add Dataset</button>
+        <button id="removeDataset">Remove Dataset</button>
+    </div>
+</div>
+<p><span th:text="${entries.size()}"> db </span>db</p>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th scope="col">Time</th>
+        <th scope="col">Origin</th>
+        <th scope="col">Destination</th>
+        <th scope="col">TimeInTraffic</th>
+    </tr>
+    </thead>
+    <tr  th:each="entry: ${entries}">
+        <td><span th:text="${entry.time}"> Time </span></td>
+        <td><span th:text="${entry.origin}"> Origin </span></td>
+        <td><span th:text="${entry.dest}"> Destination </span></td>
+        <td><span th:text="${entry.inTraffic}"> TimeInTraffic </span></td>
+    </tr>
+</table>
+</body>
+<script src="js/chartHandler.js" th:src="@{js/chartHandler.js}"></script>
+</html>

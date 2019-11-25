@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -15,7 +15,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
-        <img src="static/telki_logo.jpg" width="120" height="30" class="d-inline-block align-top" alt="">
+        <img th:src="@{pic\telki_logo.jpg}" width="120" height="30" class="d-inline-block align-top" alt="">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,7 @@
 
 <div class="card-deck">
     <div class="card" style="width: 18rem;">
-        <img src="static/summer-road-trip.jpg" class="card-img-top" alt="...">
+        <img th:src="@{pic\telki_logo.jpg}" class="card-img-top" alt="...">
         <div class="card-body">
             <h5 class="card-title">Telki - Petőfi híd</h5>
             <p class="card-text">Pillantson rá a Telki - Budapest, Petőfi híd útvonal részleteire</p>
@@ -41,7 +41,7 @@
     </div>
 
     <div class="card" style="width: 18rem;">
-        <img src="static/summer-road-trip.jpg" class="card-img-top" alt="...">
+        <img th:src="@{pic\telki_logo.jpg}" class="card-img-top" alt="...">
         <div class="card-body">
             <h5 class="card-title">Telki - Széll Kálmán tér</h5>
             <p class="card-text">Pillantson rá a Telki - Budapest, Széll Kálmán tér útvonal részleteire</p>
@@ -50,7 +50,7 @@
     </div>
 
     <div class="card" style="width: 18rem;">
-        <img src="static/summer-road-trip.jpg" class="card-img-top" alt="...">
+        <img th:src="@{pic\telki_logo.jpg}" class="card-img-top" alt="...">
         <div class="card-body">
             <h5 class="card-title">Petőfi híd - Telki</h5>
             <p class="card-text">Pillantson rá a Budapest, Petőfi híd - Telki útvonal részleteire</p>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="card" style="width: 18rem;">
-        <img src="static/summer-road-trip.jpg" class="card-img-top" alt="...">
+        <img th:src="@{pic\telki_logo.jpg}" class="card-img-top" alt="...">
         <div class="card-body">
             <h5 class="card-title">Széll Kálmán tér- Telki</h5>
             <p class="card-text">Pillantson rá a Budapest, Széll Kálmán tér - Telki útvonal részleteire</p>

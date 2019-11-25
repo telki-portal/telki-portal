@@ -24,6 +24,7 @@ public class TrafficWatchController {
 
     /**
      * Handles GET requests for the path "/" ("localhost:8080/")
+     *
      * @param model Provided by Spring
      * @return view name as String (resources/templates/[view_name].html)
      */
@@ -73,11 +74,11 @@ public class TrafficWatchController {
     }
 
     @RequestMapping(value = "/route", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<TrafficInfoEntry>> out (@RequestParam String dest) {
+    public ResponseEntity<List<TrafficInfoEntry>> out(@RequestParam String dest) {
         LOG.debug("GET '/route'");
         List<TrafficInfoEntry> entries = InfluxDBConnection
-                .getRouteInfo(telki_center,parsePlace(dest));
+                .getRouteInfo(telki_center, parsePlace(dest));
 
-        return new ResponseEntity<>(entries,HttpStatus.OK);
+        return new ResponseEntity<>(entries, HttpStatus.OK);
     }
 }

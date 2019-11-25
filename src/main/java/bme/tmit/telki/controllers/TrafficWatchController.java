@@ -31,6 +31,26 @@ public class TrafficWatchController {
         return "traffic";
     }
 
+    @GetMapping("/telki_petofi")
+    public String telkiPetofi(Model model) {
+        return "telki_petofi";
+    }
+
+    @GetMapping("/telki_szell")
+    public String telkiSzell(Model model) {
+        return "telki_szell";
+    }
+
+    @GetMapping("/petofi_telki")
+    public String petofiTelki(Model model) {
+        return "petofi_telki";
+    }
+
+    @GetMapping("/szell_telki")
+    public String szellTelki(Model model) {
+        return "szell_telki";
+    }
+
     @GetMapping("/request")
     public String forceRequest(Model model) {
         LOG.debug("GET '/request'");

@@ -45,7 +45,7 @@ public class InfluxDBConnection {
         if (!connection.databaseExists(database_name)) {
             LOG.debug("Creating database " + database_name);
             connection.createDatabase(database_name);
-            connection.createRetentionPolicy("defaultPolicy", database_name, "30d", 1, true); //todo
+            //connection.createRetentionPolicy("defaultPolicy", database_name, "30d", 1, true); //todo
         }
         connection.setDatabase(database_name);
     }

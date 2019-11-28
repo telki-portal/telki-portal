@@ -1,47 +1,73 @@
-var timestamps = [];
-var timeintraffic = [];
+/**
+ * ON WINDOW LOAD
+ */
+$(document).ready(function () {
+    chartInitialized = false;
 
-$( document ).ready(function() {
-    //console.log( "ready!" );
+    requestChartDataset("szell_kalman");
+    requestChartDataset("petofi_hid_budai");
 
+});
+
+/**
+ * Global variables
+ */
+var config = {
+    type: 'line',
+    data: {
+        labels: [],
+        datasets: []
+    }
+};
+var chartInitialized;
+var myChart;
+
+function requestChartDataset(dest) {
     $.ajax({
         type: 'GET',
         dataType: "json",
         contentType: "application/json",
         async: true,
         url: "/route",
-        data: {dest: "szell_kalman"},
-        success: function(json) {
-            //console.log(json);
+        data: {dest: dest},
+        success: function (json) {
 
-            for(var i = 0; i < json.length; i++) {
+            var newDataset = {
+                label: 'telki-' + dest,
+                data: [],
+                borderColor: '#'+(0x1000000+(Math.random())*0xffffff).toString(16).substr(1,6),
+                fill: true
+            };
+
+            var timestamps = [];
+            for (var i = 0; i < json.length; i++) {
                 var entry = json[i];
-                //console.log(entry.inTraffic);
-                timestamps.push(entry.time.substring(11,16));
-                timeintraffic.push(entry.inTraffic);
+                timestamps.push(entry.time.substring(11, 16));
+                newDataset.data.push(entry.inTraffic);
             }
 
-            initChart();
+            config.data.labels = timestamps;
+            config.data.datasets.push(newDataset);
+            updateChart();
         },
-        error: function(e) {
-            console.log( "ajax error!" );
+        error: function (e) {
+            console.log("ajax error!");
             console.log(e.message);
         }
-    })
-});
+    });
+}
 
 function initChart() {
     var ctx = document.getElementById('myChart').getContext('2d');
-    var myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: timestamps,
-            datasets: [{
-                label: 'telki-szell_kalman',
-                data: timeintraffic,
-
-            }]
-        },
-
-    });
+    myChart = new Chart(ctx, config);
 }
+
+function updateChart() {
+    if (!chartInitialized) {
+        initChart();
+        chartInitialized=true;
+    } else {
+       myChart.update();
+    }
+}
+

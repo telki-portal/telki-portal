@@ -13,11 +13,11 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 </head>
-<body class="container">
+<body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="/">
-        <img src="static/telki_logo.jpg" width="120" height="30" class="d-inline-block align-top" alt="">
+        <img th:src="@{pic\telki_logo.jpg}" width="120" height="30" class="d-inline-block align-top" alt="">
     </a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
             aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,31 +32,33 @@
     </div>
 </nav>
 
-<div class="row">
-    <div class="col">
-        <canvas id="myChart" width="400" height="200"></canvas>
-        <br>
-        <button id="addDataset">Add Dataset</button>
-        <button id="removeDataset">Remove Dataset</button>
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <canvas id="myChart" width="400" height="200"></canvas>
+            <br>
+            <button id="addDataset">Add Dataset</button>
+            <button id="removeDataset">Remove Dataset</button>
+        </div>
     </div>
+    <p><span th:text="${entries.size()}"> db </span>db</p>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Origin</th>
+            <th scope="col">Destination</th>
+            <th scope="col">TimeInTraffic</th>
+        </tr>
+        </thead>
+        <tr th:each="entry: ${entries}">
+            <td><span th:text="${entry.time}"> Time </span></td>
+            <td><span th:text="${entry.origin}"> Origin </span></td>
+            <td><span th:text="${entry.dest}"> Destination </span></td>
+            <td><span th:text="${entry.inTraffic}"> TimeInTraffic </span></td>
+        </tr>
+    </table>
 </div>
-<p><span th:text="${entries.size()}"> db </span>db</p>
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th scope="col">Time</th>
-        <th scope="col">Origin</th>
-        <th scope="col">Destination</th>
-        <th scope="col">TimeInTraffic</th>
-    </tr>
-    </thead>
-    <tr th:each="entry: ${entries}">
-        <td><span th:text="${entry.time}"> Time </span></td>
-        <td><span th:text="${entry.origin}"> Origin </span></td>
-        <td><span th:text="${entry.dest}"> Destination </span></td>
-        <td><span th:text="${entry.inTraffic}"> TimeInTraffic </span></td>
-    </tr>
-</table>
 </body>
 <script src="js/chartHandler.js" th:src="@{js/chartHandler.js}"></script>
 </html>

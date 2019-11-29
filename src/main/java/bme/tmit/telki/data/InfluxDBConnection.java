@@ -24,6 +24,7 @@ public class InfluxDBConnection {
 
     private static InfluxDBConnection connectionProvider = null;
     private static InfluxDB connection;
+    private static InfluxDBResultMapper resultMapper;
 
     private static final String url = "http://127.0.0.1:8086";
     private static final String username = "root";
@@ -32,6 +33,7 @@ public class InfluxDBConnection {
     public static final String measurement_name = "traveltime";
 
     private InfluxDBConnection() {
+        resultMapper = new InfluxDBResultMapper();
         connection = InfluxDBFactory.connect(url, username, password);
 
         //checking connection
@@ -72,44 +74,38 @@ public class InfluxDBConnection {
     public static List<TrafficInfoEntry> getEntries() {
         Query q = new Query("SELECT * FROM " + measurement_name, database_name);
         LOG.debug("[QUERY] " + q.getCommand());
-        QueryResult queryResult = getConnection()
-                .query(q);
-
-        InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
+        QueryResult queryResult = getConnection().query(q);
         return resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
     }
 
     public static List<TrafficInfoEntry> getRouteInfo(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
-        Query q = new Query(
+        String queryString =
                 "SELECT * " +
-                        "FROM " + measurement_name + " " +
-                        "WHERE \"origin\" = '" + from.name() + "' " +
-                            "AND \"destination\" = '" + to.name() + "'"
-                ,database_name);
-        LOG.debug("[QUERY] " + q.getCommand());
-        QueryResult queryResult = getConnection()
-                .query(q);
+                "FROM " + measurement_name + " " +
+                "WHERE \"origin\" = '" + from.name() + "' " +
+                "AND \"destination\" = '" + to.name() + "'";
 
-        InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
+        Query q = new Query(queryString, database_name);
+        LOG.debug("[QUERY] " + q.getCommand());
+        QueryResult queryResult = getConnection().query(q);
         return resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
     }
 
     public static List<TrafficInfoEntry> getByInterval(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
         LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        Query todaysGroup = new Query(
+
+        String queryString =
                 "SELECT MEAN(timeintraffic) AS timeintraffic " +
                 "FROM " + measurement_name + " " +
                 "WHERE \"origin\" = '" + from.name() + "' " +
-                        "AND \"destination\" = '" + to.name() + "' " +
-                        "AND time >= '" + Timestamp.valueOf(today) + "' " +
-                "GROUP BY time(10m) fill(none)"
-                ,database_name);
+                "AND \"destination\" = '" + to.name() + "' " +
+                "AND time >= '" + Timestamp.valueOf(today) + "' " +
+                "GROUP BY time(10m) fill(none)";
 
+        Query todaysGroup = new Query(queryString, database_name);
         LOG.debug("[QUERY] " + todaysGroup.getCommand());
-        QueryResult queryResult = getConnection()
-                .query(todaysGroup);
+        QueryResult queryResult = getConnection().query(todaysGroup);
 
-        InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
         List<TrafficInfoEntry> trafficInfoEntries = resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
         trafficInfoEntries.forEach(e -> {
             e.setOrigin(from.name());

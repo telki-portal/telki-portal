@@ -23,6 +23,9 @@ var firstConfig = {
         datasets: []
     }
 };
+var firstChartInitialized;
+var firstChart;
+
 var secondConfig = {
     type: 'line',
     data: {
@@ -30,8 +33,6 @@ var secondConfig = {
         datasets: []
     }
 };
-var firstChartInitialized;
-var firstChart;
 var secondChartInitialized;
 var secondChart;
 
@@ -70,6 +71,20 @@ function requestFirstChartDataset(from, to) {
     });
 }
 
+function initFirstChart() {
+    var ctx = document.getElementById('firstChart').getContext('2d');
+    firstChart = new Chart(ctx, firstConfig);
+}
+
+function updateFirstChart() {
+    if (!firstChartInitialized) {
+        initFirstChart();
+        firstChartInitialized=true;
+    } else {
+        firstChart.update();
+    }
+}
+
 function requestSeondChartDataset(from, to) {
     $.ajax({
         type: 'GET',
@@ -103,20 +118,6 @@ function requestSeondChartDataset(from, to) {
             console.log(e.message);
         }
     });
-}
-
-function initFirstChart() {
-    var ctx = document.getElementById('firstChart').getContext('2d');
-    firstChart = new Chart(ctx, firstConfig);
-}
-
-function updateFirstChart() {
-    if (!firstChartInitialized) {
-        initFirstChart();
-        firstChartInitialized=true;
-    } else {
-       firstChart.update();
-    }
 }
 
 function initSecondChart() {

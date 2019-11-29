@@ -34,13 +34,24 @@
 
 <div class="container">
     <div class="row">
+        összes
+    </div>
+    <div class="row">
         <div class="col">
-            <canvas id="myChart" width="400" height="200"></canvas>
+            <canvas id="firstChart" width="400" height="200"></canvas>
             <br>
-            <button id="addDataset">Add Dataset</button>
-            <button id="removeDataset">Remove Dataset</button>
         </div>
     </div>
+    <div class="row">
+        Mai adatok 10percenként
+    </div>
+    <div class="row">
+
+    <div class="col">
+        <canvas id="secondChart" width="400" height="200"></canvas>
+        <br>
+    </div>
+</div>
     <p><span th:text="${entries.size()}"> db </span>db</p>
     <table class="table table-striped">
         <thead>

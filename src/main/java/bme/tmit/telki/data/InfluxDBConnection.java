@@ -9,6 +9,8 @@ import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
 import org.influxdb.impl.InfluxDBResultMapper;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +80,12 @@ public class InfluxDBConnection {
     }
 
     public static List<TrafficInfoEntry> getRouteInfo(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
-        Query q = new Query("SELECT * FROM " + measurement_name + " WHERE \"origin\" = '" + from.name() + "' AND \"destination\" = '" + to.name() + "'", database_name);
+        Query q = new Query(
+                "SELECT * " +
+                        "FROM " + measurement_name + " " +
+                        "WHERE \"origin\" = '" + from.name() + "' " +
+                            "AND \"destination\" = '" + to.name() + "'"
+                ,database_name);
         LOG.debug("[QUERY] " + q.getCommand());
         QueryResult queryResult = getConnection()
                 .query(q);
@@ -87,6 +94,34 @@ public class InfluxDBConnection {
         return resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
     }
 
-    //SELECT destination, min(timeintraffic) AS fasetest_route FROM traveltime WHERE "origin"='telki_center' GROUP BY time(10m) fill(none)
+    public static List<TrafficInfoEntry> getByInterval(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
+        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        Query todaysGroup = new Query(
+                "SELECT MEAN(timeintraffic) AS timeintraffic " +
+                "FROM " + measurement_name + " " +
+                "WHERE \"origin\" = '" + from.name() + "' " +
+                        "AND \"destination\" = '" + to.name() + "' " +
+                        "AND time >= '" + Timestamp.valueOf(today) + "' " +
+                "GROUP BY time(10m) fill(none)"
+                ,database_name);
+
+        LOG.debug("[QUERY] " + todaysGroup.getCommand());
+        QueryResult queryResult = getConnection()
+                .query(todaysGroup);
+
+        InfluxDBResultMapper resultMapper = new InfluxDBResultMapper();
+        List<TrafficInfoEntry> trafficInfoEntries = resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
+        trafficInfoEntries.forEach(e -> {
+            e.setOrigin(from.name());
+            e.setDest(to.name());
+        });
+
+        return trafficInfoEntries;
+    }
+
+    // SELECT destination, min(timeintraffic) AS fasetest_route FROM traveltime WHERE "origin"='telki_center' GROUP BY time(10m) fill(none)
+    // select mean(timeintraffic) as timeintraffic from traveltime where origin='telki_center' group by time(10m) fill(none)
     // insert traveltime,origin="telki",destination="szell" timeintraffic=21i
+
+    ////SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse("2016-06-20T11:59:37.136244Z") = {Date@7679} "Mon Jun 20 12:01:53 BST 2016"
 }

@@ -12,16 +12,17 @@ import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import static bme.tmit.telki.TelkiPortalApplication.LOG;
 
 /**
  * Komment:
- *
+ * <p>
  * Kérés URLként:
  * https://maps.googleapis.com/maps/api/distancematrix/json?origins=Seattle&destinations=San+Francisco&key=AIzaSyBcJixlXHjzXIc0McRXeGtaEDp_jQh9Ef0
- *
+ * <p>
  * Válasz JSON formában PostMan-el megnézve:
  * {
  *    "destination_addresses": [
@@ -49,21 +50,22 @@ import static bme.tmit.telki.TelkiPortalApplication.LOG;
  *    ],
  *    "status": "OK"
  * }
- *
- *
  */
 
 @Component
-
 public class DistanceMatrixClient {
     public enum place {
         telki_center, szell_kalman, petofi_hid_budai
     }
+
     public static place parsePlace(String str) {
         switch (str) {
-            case "telki_center": return place.telki_center;
-            case "szell_kalman": return place.szell_kalman;
-            case "petofi_hid_budai": return place.petofi_hid_budai;
+            case "telki_center":
+                return place.telki_center;
+            case "szell_kalman":
+                return place.szell_kalman;
+            case "petofi_hid_budai":
+                return place.petofi_hid_budai;
         }
         return null;
     }
@@ -117,9 +119,13 @@ public class DistanceMatrixClient {
                 .trafficModel(TrafficModel.BEST_GUESS)
                 .awaitIgnoreError();
         InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "telki_center", "szell_kalman", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds/60));
+                new TrafficInfoEntry(null, "telki_center", "szell_kalman", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
+                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                        String.valueOf(LocalDateTime.now().getHour())));
         InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "telki_center", "petofi_hid_budai", distanceMatrix.rows[0].elements[1].durationInTraffic.inSeconds/60));
+                new TrafficInfoEntry(null, "telki_center", "petofi_hid_budai", distanceMatrix.rows[0].elements[1].durationInTraffic.inSeconds / 60,
+                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                        String.valueOf(LocalDateTime.now().getHour())));
     }
 
     public void requestBudapestTelki() {
@@ -132,14 +138,18 @@ public class DistanceMatrixClient {
                 .trafficModel(TrafficModel.BEST_GUESS)
                 .awaitIgnoreError();
         InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "szell_kalman", "telki_center", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds/60));
+                new TrafficInfoEntry(null, "szell_kalman", "telki_center", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
+                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                        String.valueOf(LocalDateTime.now().getHour())));
         InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "petofi_hid_budai", "telki_center", distanceMatrix.rows[1].elements[0].durationInTraffic.inSeconds/60));
+                new TrafficInfoEntry(null, "petofi_hid_budai", "telki_center", distanceMatrix.rows[1].elements[0].durationInTraffic.inSeconds / 60,
+                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                        String.valueOf(LocalDateTime.now().getHour())));
     }
 
     @Scheduled(cron = "0 0/20 22-23 * * ?")
     public void Telki_Budapest_22_00() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Telki_Budapest_22_00: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_22_00: " + formatter.format(date));
@@ -149,7 +159,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/20 0-3 * * ?")
     public void Telki_Budapest_00_04() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Telki_Budapest_00_04: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_00_04: " + formatter.format(date));
@@ -158,7 +168,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/10 4-5 * * ?")
     public void Telki_Budapest_04_06() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Telki_Budapest_04_06: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_04_06: " + formatter.format(date));
@@ -167,7 +177,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/6 6-11 * * ?")
     public void Telki_Budapest_06_12() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Telki_Budapest_06_12: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_06_12: " + formatter.format(date));
@@ -176,7 +186,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/10 12-21 * * ?")
     public void Telki_Budapest_12_22() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Telki_Budapest_12_22: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_12_22: " + formatter.format(date));
@@ -185,7 +195,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/20 0-5 * * ?")
     public void Budapest_Telki_00_06() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Budapest_Telki_00_06: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_00_06: " + formatter.format(date));
@@ -194,7 +204,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/10 6-13 * * ?")
     public void Budapest_Telki_06_14() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Budapest_Telki_06_14: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_06_14: " + formatter.format(date));
@@ -203,7 +213,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/6 14-19 * * ?")
     public void Budapest_Telki_14_20() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Budapest_Telki_14_20: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_14_20: " + formatter.format(date));
@@ -212,7 +222,7 @@ public class DistanceMatrixClient {
 
     @Scheduled(cron = "0 0/10 20-23 * * ?")
     public void Budapest_Telki_20_24() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
         //System.out.println("Budapest_Telki_20_24: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_20_24: " + formatter.format(date));
@@ -225,4 +235,5 @@ public class DistanceMatrixClient {
     // https://developers.google.com/maps/documentation/distance-matrix/start
     // https://developers.google.com/maps/documentation/distance-matrix/intro#traffic-model
 
+    //int value = entry.getTime().atZone(ZoneId.systemDefault()).getDayOfWeek().getValue(); //from 1 (Monday) to 7 (Sunday).
 }

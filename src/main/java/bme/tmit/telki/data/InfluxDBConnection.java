@@ -18,7 +18,7 @@ import static bme.tmit.telki.TelkiPortalApplication.LOG;
 
 /**
  * Singleton class
- * Handles database connection.
+ * Handles database connection, queries.
  */
 public class InfluxDBConnection {
 
@@ -63,9 +63,11 @@ public class InfluxDBConnection {
     public static void saveEntry(TrafficInfoEntry entry) {
         Point point = Point.measurement(measurement_name)
                 .time(System.currentTimeMillis(), TimeUnit.MILLISECONDS)
-                .addField("origin", entry.getOrigin())
-                .addField("destination", entry.getDest())
+                .tag("origin", entry.getOrigin())
+                .tag("destination", entry.getDest())
                 .addField("timeintraffic", entry.getInTraffic())
+                .tag("dayofweek", String.valueOf(entry.getDayOfWeek()))
+                .tag("hourofday", String.valueOf(entry.getHourOfDay()))
                 .build();
         LOG.debug("[QUERY] INSERT " + point.lineProtocol());
         getConnection().write(point);
@@ -79,8 +81,7 @@ public class InfluxDBConnection {
     }
 
     public static List<TrafficInfoEntry> getRouteInfo(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
-        String queryString =
-                "SELECT * " +
+        String queryString = "SELECT * " +
                 "FROM " + measurement_name + " " +
                 "WHERE \"origin\" = '" + from.name() + "' " +
                 "AND \"destination\" = '" + to.name() + "'";
@@ -94,8 +95,7 @@ public class InfluxDBConnection {
     public static List<TrafficInfoEntry> getByInterval(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
         LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
 
-        String queryString =
-                "SELECT MEAN(timeintraffic) AS timeintraffic " +
+        String queryString = "SELECT MEAN(timeintraffic) AS timeintraffic " +
                 "FROM " + measurement_name + " " +
                 "WHERE \"origin\" = '" + from.name() + "' " +
                 "AND \"destination\" = '" + to.name() + "' " +
@@ -115,6 +115,35 @@ public class InfluxDBConnection {
         return trafficInfoEntries;
     }
 
+    public static List<TrafficInfoEntry> getWeekHourly(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
+        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
+        //TODO wtf
+        String queryString = "SELECT MEAN(timeintraffic) AS timeintraffic " +
+                "FROM ( SELECT * FROM " + measurement_name + " " +
+                "WHERE \"origin\" = '" + from.name() + "' " +
+                "AND \"destination\" = '" + to.name() + "' " +
+                "AND time >= '" + Timestamp.valueOf(today) + "' )" +
+                "GROUP BY hourofday fill(none)";
+
+        Query todaysGroup = new Query(queryString, database_name);
+        LOG.debug("[QUERY] " + todaysGroup.getCommand());
+        QueryResult queryResult = getConnection().query(todaysGroup);
+
+        System.out.println(queryResult.toString());
+
+        List<TrafficInfoEntry> trafficInfoEntries = resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
+        trafficInfoEntries.forEach(e -> {
+            e.setOrigin(from.name());
+            e.setDest(to.name());
+
+            System.out.println(e.toString());
+
+        });
+
+        return trafficInfoEntries;
+    }
+
+    //select mean(timeintraffic) from (select * from traveltime group by dayofweek) group by hourofday
     // SELECT destination, min(timeintraffic) AS fasetest_route FROM traveltime WHERE "origin"='telki_center' GROUP BY time(10m) fill(none)
     // select mean(timeintraffic) as timeintraffic from traveltime where origin='telki_center' group by time(10m) fill(none)
     // insert traveltime,origin="telki",destination="szell" timeintraffic=21i

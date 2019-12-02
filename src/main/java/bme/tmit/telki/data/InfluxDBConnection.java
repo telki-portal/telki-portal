@@ -74,6 +74,32 @@ public class InfluxDBConnection {
         getConnection().write(point);
     }
 
+    public static List<TrafficInfoEntry> getDayInfo(DistanceMatrixClient.place from, DistanceMatrixClient.place to, int year, int dayOfYear) {
+        LocalDateTime startOfDay = LocalDateTime.now().withYear(year).withDayOfYear(dayOfYear).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfDay = LocalDateTime.now().withYear(year).withDayOfYear(dayOfYear).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        String queryString =
+                        "SELECT MEAN(timeintraffic) AS timeintraffic " +
+                        "FROM " + measurement_name + " " +
+                        "WHERE \"origin\" = '" + from.name() + "' " +
+                        "AND \"destination\" = '" + to.name() + "' " +
+                        "AND time >= '" + Timestamp.valueOf(startOfDay) + "' " +
+                        "AND time <= '" + Timestamp.valueOf(endOfDay) + "' " +
+                        "GROUP BY time(1h) fill(none)";
+
+        Query daysGroup = new Query(queryString, database_name);
+        LOG.debug("[QUERY] " + daysGroup.getCommand());
+        QueryResult queryResult = getConnection().query(daysGroup);
+
+        List<TrafficInfoEntry> trafficInfoEntries = resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
+        trafficInfoEntries.forEach(e -> {
+            e.setOrigin(from.name());
+            e.setDest(to.name());
+        });
+
+        return trafficInfoEntries;
+    }
+
     public static List<TrafficInfoEntry> getEntries() {
         Query q = new Query("SELECT * FROM " + measurement_name, database_name);
         LOG.debug("[QUERY] " + q.getCommand());

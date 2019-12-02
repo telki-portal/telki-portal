@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+    <link rel="stylesheet" th:href="@{css/calendar.css}">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/css/bootstrap-datetimepicker.min.css">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
     <title>Telki - Budapest, Petőfi híd</title>
 </head>
 <body>
@@ -30,17 +37,33 @@
     </div>
 </nav>
 
-<div class="dropdown">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false">
-        Dropdown button
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        <a class="dropdown-item" href="#">Reggel</a>
-        <a class="dropdown-item" href="#">Délután</a>
-        <a class="dropdown-item" href="#">Este</a>
+<div class="container">
+    <div class="row styling">
+        <h3><strong>Bootstrap Datepicker</strong></h3><br>
+        <div class='col-sm-offset-4 col-sm-4'>
+            <div class="form-group">
+                <div class='input-group date' id='datetimepicker1'>
+                    <input type='text' class="form-control input-lg"/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                </div>
+            </div>
+            <p class="help-block"><strong>Date format:</strong> yyyy-mm-dd</p>
+        </div>
+    </div>
+    <br>
+
+    <div class="row">
+        Egy nap
+    </div>
+    <div class="row">
+        <div class="col">
+            <canvas id="dayOfYearChart" width="400" height="200"></canvas>
+            <br>
+        </div>
     </div>
 </div>
+
+
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -54,4 +77,10 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
 </body>
+<script src="js/telki_petofi.js" th:src="@{js/telki_petofi.js}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.9.0/moment-with-locales.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/3.1.3/js/bootstrap-datetimepicker.min.js"></script>
+<script src="js/chartHandler.js" th:src="@{js/chartHandler.js}"></script>
 </html>

@@ -13,7 +13,7 @@ import java.util.List;
 
 import static bme.tmit.telki.TelkiPortalApplication.LOG;
 import static bme.tmit.telki.TelkiPortalApplication.distanceMatrixClient;
-import static bme.tmit.telki.distance_matrix.DistanceMatrixClient.parsePlace;
+import static bme.tmit.telki.distance_matrix.DistanceMatrixClient.*;
 import static bme.tmit.telki.distance_matrix.DistanceMatrixClient.place.telki_center;
 
 /**
@@ -78,6 +78,15 @@ public class TrafficWatchController {
         LOG.debug("GET '/route'");
         List<TrafficInfoEntry> entries = InfluxDBConnection
                 .getRouteInfo(parsePlace(from), parsePlace(to));
+
+        return new ResponseEntity<>(entries, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/dayOfYear", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TrafficInfoEntry>> outForDay(@RequestParam String from, @RequestParam String to, @RequestParam String date) {
+        LOG.debug("GET '/dayOfYear'");
+        List<TrafficInfoEntry> entries = InfluxDBConnection
+                .getDayInfo(parsePlace(from), parsePlace(to), getYearByDate(date), getDayOfYearByDate(date));
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }

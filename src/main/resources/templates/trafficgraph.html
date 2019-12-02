@@ -44,6 +44,31 @@
         Mai adatok 10percenként
     </div>
     <div class="row">
+
+        <div class="col">
+            <canvas id="secondChart" width="400" height="200"></canvas>
+            <br>
+        </div>
+    </div>
+</div>
+
+<p><span th:text="${entries.size()}"> db </span>db</p>
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th scope="col">Time</th>
+        <th scope="col">Origin</th>
+        <th scope="col">Destination</th>
+        <th scope="col">TimeInTraffic</th>
+    </tr>
+    </thead>
+    <tr th:each="entry: ${entries}">
+        <td><span th:text="${entry.time}"> Time </span></td>
+        <td><span th:text="${entry.origin}"> Origin </span></td>
+        <td><span th:text="${entry.dest}"> Destination </span></td>
+        <td><span th:text="${entry.inTraffic}"> TimeInTraffic </span></td>
+    </tr>
+</table>
         <div class="col">
             <canvas id="secondChart" width="400" height="200"></canvas>
             <br>

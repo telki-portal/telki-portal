@@ -11,6 +11,7 @@ import org.influxdb.impl.InfluxDBResultMapper;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -116,30 +117,29 @@ public class InfluxDBConnection {
     }
 
     public static List<TrafficInfoEntry> getWeekHourly(DistanceMatrixClient.place from, DistanceMatrixClient.place to) {
-        LocalDateTime today = LocalDateTime.now().withHour(0).withMinute(0).withSecond(0).withNano(0);
-        //TODO wtf
-        String queryString = "SELECT MEAN(timeintraffic) AS timeintraffic " +
-                "FROM ( SELECT * FROM " + measurement_name + " " +
-                "WHERE \"origin\" = '" + from.name() + "' " +
-                "AND \"destination\" = '" + to.name() + "' " +
-                "AND time >= '" + Timestamp.valueOf(today) + "' )" +
-                "GROUP BY hourofday fill(none)";
+        List<TrafficInfoEntry> trafficInfoEntries=new ArrayList<>();
+        for (int i = 1; i<=7; i++) {
 
-        Query todaysGroup = new Query(queryString, database_name);
-        LOG.debug("[QUERY] " + todaysGroup.getCommand());
-        QueryResult queryResult = getConnection().query(todaysGroup);
+            String queryString = "SELECT MEAN(timeintraffic) AS timeintraffic " +
+                    "FROM " + measurement_name + " " +
+                    "WHERE origin = '" + from.name() + "' " +
+                    "AND destination = '" + to.name() + "' " +
+                    "AND dayofweek = '" + i + "' " +
+                    "GROUP BY hourofday fill(none)";
 
-        System.out.println(queryResult.toString());
+            Query todaysGroup = new Query(queryString, database_name);
+            LOG.debug("[QUERY] " + todaysGroup.getCommand());
+            QueryResult queryResult = getConnection().query(todaysGroup);
 
-        List<TrafficInfoEntry> trafficInfoEntries = resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
-        trafficInfoEntries.forEach(e -> {
-            e.setOrigin(from.name());
-            e.setDest(to.name());
-
-            System.out.println(e.toString());
-
-        });
-
+            List<TrafficInfoEntry> tmpEntries = resultMapper.toPOJO(queryResult, TrafficInfoEntry.class);
+            for (TrafficInfoEntry tie: tmpEntries) {
+                tie.setOrigin(from.name());
+                tie.setDest(to.name());
+                tie.setDayOfWeek(String.valueOf(i));    //todo loop iterator
+                trafficInfoEntries.add(tie);
+            }
+        }
+        //trafficInfoEntries.forEach(e->System.out.println(e.toString()));
         return trafficInfoEntries;
     }
 

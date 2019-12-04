@@ -54,7 +54,7 @@
         //reset config
         dayOfYearConfig.data.datasets = [];
         dayOfYearConfig.data.labels = [];
-        requestDayOfYearChartDataset("telki_center", "petofi_hid_budai", date);
+        requestDayOfYearChartDataset("telki_center", "szell_kalman", date);
     }
  });
 

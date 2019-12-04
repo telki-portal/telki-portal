@@ -71,20 +71,20 @@ public class DistanceMatrixClient {
     }
 
     public static int getYearByDate(String str) {
-        String tempStr = str.substring(0, 3);
+        String tempStr = str.substring(0, 4);
         int temp = Integer.parseInt(tempStr);
         return temp;
     }
 
     public static int getDayOfYearByDate(String str) {
 
-        String tempYearStr = str.substring(0, 3);
+        String tempYearStr = str.substring(0, 4);
         int tempYearInt = Integer.parseInt(tempYearStr);
 
-        String tempMonthStr = str.substring(5, 6);
+        String tempMonthStr = str.substring(5, 7);
         int tempMonthInt = Integer.parseInt(tempMonthStr);
 
-        String tempDayStr = str.substring(8, 9);
+        String tempDayStr = str.substring(8, 10);
         int tempDayInt = Integer.parseInt(tempDayStr);
 
         int dayOfYear = LocalDateTime.of(tempYearInt, tempMonthInt, tempDayInt, 0, 0).getDayOfYear();

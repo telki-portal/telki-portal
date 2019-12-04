@@ -132,57 +132,84 @@ public class DistanceMatrixClient {
 
     public void requestTelkiBudapest() {
         LOG.info("Sending google api request");
-        DistanceMatrix distanceMatrix = DistanceMatrixApi.newRequest(GeoApiContextProvider.getContext())
-                .origins(telki_center)
-                .destinations(szell_kalman, petofi_hid_budai)
-                .mode(TravelMode.DRIVING)
-                .departureTime(Instant.now())
-                .trafficModel(TrafficModel.BEST_GUESS)
-                .awaitIgnoreError();
-        InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "telki_center", "szell_kalman", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
-                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
-                        String.valueOf(LocalDateTime.now().getHour())));
-        InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "telki_center", "petofi_hid_budai", distanceMatrix.rows[0].elements[1].durationInTraffic.inSeconds / 60,
-                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
-                        String.valueOf(LocalDateTime.now().getHour())));
+        try {
+            DistanceMatrix distanceMatrix = DistanceMatrixApi.newRequest(GeoApiContextProvider.getContext())
+                    .origins(telki_center)
+                    .destinations(szell_kalman, petofi_hid_budai)
+                    .mode(TravelMode.DRIVING)
+                    .departureTime(Instant.now())
+                    .trafficModel(TrafficModel.BEST_GUESS)
+                    .await();
+            //.awaitIgnoreError();
+
+            if (distanceMatrix.rows.length > 0
+                    && distanceMatrix.rows[0].elements.length > 0
+                    && distanceMatrix.rows[0].elements[0].durationInTraffic != null
+                    && distanceMatrix.rows[0].elements[1].durationInTraffic != null) {
+
+                InfluxDBConnection.saveEntry(
+                        new TrafficInfoEntry(null, "telki_center", "szell_kalman", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
+                                String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                                String.valueOf(LocalDateTime.now().getHour())));
+                InfluxDBConnection.saveEntry(
+                        new TrafficInfoEntry(null, "telki_center", "petofi_hid_budai", distanceMatrix.rows[0].elements[1].durationInTraffic.inSeconds / 60,
+                                String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                                String.valueOf(LocalDateTime.now().getHour())));
+            } else {
+                LOG.error("[RESPONSE] " + distanceMatrix.toString());
+            }
+
+        } catch (Exception e) {
+            LOG.error(e.toString());
+        }
     }
 
     public void requestBudapestTelki() {
         LOG.info("Sending google api request");
-        DistanceMatrix distanceMatrix = DistanceMatrixApi.newRequest(GeoApiContextProvider.getContext())
-                .origins(szell_kalman, petofi_hid_budai)
-                .destinations(telki_center)
-                .mode(TravelMode.DRIVING)
-                .departureTime(Instant.now())
-                .trafficModel(TrafficModel.BEST_GUESS)
-                .awaitIgnoreError();
-        InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "szell_kalman", "telki_center", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
-                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
-                        String.valueOf(LocalDateTime.now().getHour())));
-        InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "petofi_hid_budai", "telki_center", distanceMatrix.rows[1].elements[0].durationInTraffic.inSeconds / 60,
-                        String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
-                        String.valueOf(LocalDateTime.now().getHour())));
+        try {
+            DistanceMatrix distanceMatrix = DistanceMatrixApi.newRequest(GeoApiContextProvider.getContext())
+                    .origins(szell_kalman, petofi_hid_budai)
+                    .destinations(telki_center)
+                    .mode(TravelMode.DRIVING)
+                    .departureTime(Instant.now())
+                    .trafficModel(TrafficModel.BEST_GUESS)
+                    .await();
+            //.awaitIgnoreError();
+            if (distanceMatrix.rows.length > 0
+                    && distanceMatrix.rows[0].elements.length > 0
+                    && distanceMatrix.rows[0].elements[0].durationInTraffic != null
+                    && distanceMatrix.rows[0].elements[1].durationInTraffic != null) {
+
+                InfluxDBConnection.saveEntry(
+                        new TrafficInfoEntry(null, "szell_kalman", "telki_center", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
+                                String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                                String.valueOf(LocalDateTime.now().getHour())));
+                InfluxDBConnection.saveEntry(
+                        new TrafficInfoEntry(null, "petofi_hid_budai", "telki_center", distanceMatrix.rows[1].elements[0].durationInTraffic.inSeconds / 60,
+                                String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
+                                String.valueOf(LocalDateTime.now().getHour())));
+            } else {
+                LOG.error("[RESPONSE] " + distanceMatrix.toString());
+            }
+        } catch (
+                Exception e) {
+            LOG.error(e.toString());
+        }
+
     }
 
     @Scheduled(cron = "0 0/20 22-23 * * ?")
     public void Telki_Budapest_22_00() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Telki_Budapest_22_00: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_22_00: " + formatter.format(date));
         requestTelkiBudapest();
-
     }
 
     @Scheduled(cron = "0 0/20 0-3 * * ?")
     public void Telki_Budapest_00_04() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Telki_Budapest_00_04: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_00_04: " + formatter.format(date));
         requestTelkiBudapest();
     }
@@ -191,7 +218,6 @@ public class DistanceMatrixClient {
     public void Telki_Budapest_04_06() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Telki_Budapest_04_06: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_04_06: " + formatter.format(date));
         requestTelkiBudapest();
     }
@@ -200,7 +226,6 @@ public class DistanceMatrixClient {
     public void Telki_Budapest_06_12() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Telki_Budapest_06_12: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_06_12: " + formatter.format(date));
         requestTelkiBudapest();
     }
@@ -209,7 +234,6 @@ public class DistanceMatrixClient {
     public void Telki_Budapest_12_22() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Telki_Budapest_12_22: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Telki_Budapest_12_22: " + formatter.format(date));
         requestTelkiBudapest();
     }
@@ -218,7 +242,6 @@ public class DistanceMatrixClient {
     public void Budapest_Telki_00_06() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Budapest_Telki_00_06: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_00_06: " + formatter.format(date));
         requestBudapestTelki();
     }
@@ -227,7 +250,6 @@ public class DistanceMatrixClient {
     public void Budapest_Telki_06_14() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Budapest_Telki_06_14: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_06_14: " + formatter.format(date));
         requestBudapestTelki();
     }
@@ -236,7 +258,6 @@ public class DistanceMatrixClient {
     public void Budapest_Telki_14_20() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Budapest_Telki_14_20: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_14_20: " + formatter.format(date));
         requestBudapestTelki();
     }
@@ -245,7 +266,6 @@ public class DistanceMatrixClient {
     public void Budapest_Telki_20_24() {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
         Date date = new Date(System.currentTimeMillis());
-        //System.out.println("Budapest_Telki_20_24: " + formatter.format(date));
         LOG.info("[SCHEDULED TASK] Budapest_Telki_20_24: " + formatter.format(date));
         requestBudapestTelki();
     }

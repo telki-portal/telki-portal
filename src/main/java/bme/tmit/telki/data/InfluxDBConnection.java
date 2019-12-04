@@ -38,11 +38,15 @@ public class InfluxDBConnection {
         connection = InfluxDBFactory.connect(url, username, password);
 
         //checking connection
-        Pong response = connection.ping();
-        if (response.getVersion().equalsIgnoreCase("unknown")) {
-            LOG.error("Error pinging server.");
-            //todo exception?
-            return;
+        try {
+            Pong response = connection.ping();
+            if (response.getVersion().equalsIgnoreCase("unknown")) {
+                LOG.error("Error pinging database.");
+                return;
+            }
+        } catch (Exception e) {
+            LOG.error("Error connecting to database.");
+            throw e;
         }
         LOG.info("Successfully connected to database as " + username);
 
@@ -50,7 +54,7 @@ public class InfluxDBConnection {
         if (!connection.databaseExists(database_name)) {
             LOG.debug("Creating database " + database_name);
             connection.createDatabase(database_name);
-            //connection.createRetentionPolicy("defaultPolicy", database_name, "30d", 1, true); //todo
+            //connection.createRetentionPolicy("defaultPolicy", database_name, "30d", 1, true); //todo?
         }
         connection.setDatabase(database_name);
     }

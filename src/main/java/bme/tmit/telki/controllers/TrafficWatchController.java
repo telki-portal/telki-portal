@@ -7,14 +7,16 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 import static bme.tmit.telki.TelkiPortalApplication.LOG;
 import static bme.tmit.telki.TelkiPortalApplication.distanceMatrixClient;
 import static bme.tmit.telki.distance_matrix.DistanceMatrixClient.*;
-import static bme.tmit.telki.distance_matrix.DistanceMatrixClient.place.telki_center;
 
 /**
  * MVC controller.
@@ -61,6 +63,7 @@ public class TrafficWatchController {
     public String forceRequest(Model model) {
         LOG.debug("GET '/request'");
         distanceMatrixClient.requestTelkiBudapest();
+        distanceMatrixClient.requestBudapestTelki();
         return "main";
     }
 

@@ -3,10 +3,7 @@ package bme.tmit.telki.distance_matrix;
 import bme.tmit.telki.data.InfluxDBConnection;
 import bme.tmit.telki.data.TrafficInfoEntry;
 import com.google.maps.DistanceMatrixApi;
-import com.google.maps.model.DistanceMatrix;
-import com.google.maps.model.LatLng;
-import com.google.maps.model.TrafficModel;
-import com.google.maps.model.TravelMode;
+import com.google.maps.model.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -105,7 +102,6 @@ public class DistanceMatrixClient {
                 .departureTime(Instant.now())
                 .trafficModel(TrafficModel.BEST_GUESS)
                 .awaitIgnoreError();
-
         /*
         System.out.println(distanceMatrix.toString());
         for (DistanceMatrixRow row :distanceMatrix.rows) {
@@ -114,20 +110,7 @@ public class DistanceMatrixClient {
                 System.out.println("InTraffic: " + element.durationInTraffic + ", Időtartam: " + element.duration +", Távolság: " + element.distance);
             }
         }
-
-        List<TrafficInfoEntry> responses = new ArrayList<>();
-        responses.add(new TrafficInfoEntry(null, "telki_center", "szell_kalman", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds/60));
-        responses.add(new TrafficInfoEntry(null, "telki_center", "petofi_hid_budai", distanceMatrix.rows[0].elements[1].durationInTraffic.inSeconds/60));
-
-        for (TrafficInfoEntry entry : responses) {
-            InfluxDBConnection.saveEntry(entry);
-        }
-
-        InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "telki_center", "szell_kalman", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds/60));
-        InfluxDBConnection.saveEntry(
-                new TrafficInfoEntry(null, "telki_center", "petofi_hid_budai", distanceMatrix.rows[0].elements[1].durationInTraffic.inSeconds/60));
-         */
+        */
     }
 
     public void requestTelkiBudapest() {
@@ -156,11 +139,12 @@ public class DistanceMatrixClient {
                                 String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
                                 String.valueOf(LocalDateTime.now().getHour())));
             } else {
-                LOG.error("[RESPONSE] " + distanceMatrix.toString());
+                LOG.error("[RESPONSE ERROR] " + distanceMatrix.toString());
             }
 
         } catch (Exception e) {
             LOG.error(e.toString());
+            e.printStackTrace();
         }
     }
 
@@ -175,10 +159,11 @@ public class DistanceMatrixClient {
                     .trafficModel(TrafficModel.BEST_GUESS)
                     .await();
             //.awaitIgnoreError();
+
             if (distanceMatrix.rows.length > 0
                     && distanceMatrix.rows[0].elements.length > 0
                     && distanceMatrix.rows[0].elements[0].durationInTraffic != null
-                    && distanceMatrix.rows[0].elements[1].durationInTraffic != null) {
+                    && distanceMatrix.rows[1].elements[0].durationInTraffic != null) {
 
                 InfluxDBConnection.saveEntry(
                         new TrafficInfoEntry(null, "szell_kalman", "telki_center", distanceMatrix.rows[0].elements[0].durationInTraffic.inSeconds / 60,
@@ -189,11 +174,17 @@ public class DistanceMatrixClient {
                                 String.valueOf(LocalDateTime.now().getDayOfWeek().getValue()),
                                 String.valueOf(LocalDateTime.now().getHour())));
             } else {
-                LOG.error("[RESPONSE] " + distanceMatrix.toString());
+                LOG.error("[RESPONSE ERROR] " + distanceMatrix.toString());
+                for (DistanceMatrixRow row :distanceMatrix.rows) {
+                    System.out.println(row.toString());
+                    for (DistanceMatrixElement element : row.elements) {
+                        System.out.println("InTraffic: " + element.durationInTraffic + ", Időtartam: " + element.duration +", Távolság: " + element.distance);
+                    }
+                }
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             LOG.error(e.toString());
+            e.printStackTrace();
         }
 
     }

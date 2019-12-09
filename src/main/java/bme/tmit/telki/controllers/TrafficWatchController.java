@@ -94,12 +94,20 @@ public class TrafficWatchController {
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }
 
-
     @RequestMapping(value = "/interval", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<TrafficInfoEntry>> interval(@RequestParam String from, @RequestParam String to) {
         LOG.debug("GET '/interval'");
         List<TrafficInfoEntry> entries = InfluxDBConnection
                 .getByInterval(parsePlace(from), parsePlace(to));
+
+        return new ResponseEntity<>(entries, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/weekly", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TrafficInfoEntry>> weekly(@RequestParam String from, @RequestParam String to) {
+        LOG.debug("GET '/weekly'");
+        List<TrafficInfoEntry> entries = InfluxDBConnection
+                .getWeekHourly(parsePlace(from), parsePlace(to));
 
         return new ResponseEntity<>(entries, HttpStatus.OK);
     }

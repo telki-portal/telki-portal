@@ -50,6 +50,16 @@
             <br>
         </div>
     </div>
+    <div class="row">
+        Heti átlag óránként
+    </div>
+    <div class="row">
+
+        <div class="col">
+            <canvas id="weekChart" width="400" height="200"></canvas>
+            <br>
+        </div>
+    </div>
 </div>
 
 <p><span th:text="${entries.size()}"> db </span>db</p>
@@ -69,10 +79,7 @@
         <td><span th:text="${entry.inTraffic}"> TimeInTraffic </span></td>
     </tr>
 </table>
-        <div class="col">
-            <canvas id="secondChart" width="400" height="200"></canvas>
-            <br>
-        </div>
+
     </div>
     <p><span th:text="${entries.size()}"> db </span>db</p>
     <table class="table table-striped">

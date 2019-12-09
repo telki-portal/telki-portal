@@ -165,7 +165,7 @@ public class InfluxDBConnection {
             for (TrafficInfoEntry tie: tmpEntries) {
                 tie.setOrigin(from.name());
                 tie.setDest(to.name());
-                tie.setDayOfWeek(String.valueOf(i));    //todo loop iterator
+                tie.setDayOfWeek(String.valueOf(i));
                 trafficInfoEntries.add(tie);
             }
         }

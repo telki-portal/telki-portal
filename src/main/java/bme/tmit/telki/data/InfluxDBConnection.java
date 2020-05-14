@@ -12,6 +12,7 @@ import org.influxdb.impl.InfluxDBResultMapper;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -155,7 +156,9 @@ public class InfluxDBConnection {
                     "WHERE origin = '" + from.name() + "' " +
                     "AND destination = '" + to.name() + "' " +
                     "AND dayofweek = '" + i + "' " +
-                    "GROUP BY hourofday fill(none)";
+                    "GROUP BY hourofday " +
+                    "fill(none) " +
+                    "ORDER BY time;";
 
             Query todaysGroup = new Query(queryString, database_name);
             LOG.debug("[QUERY] " + todaysGroup.getCommand());
@@ -168,6 +171,10 @@ public class InfluxDBConnection {
                 tie.setDayOfWeek(String.valueOf(i));
                 trafficInfoEntries.add(tie);
             }
+//            tmpEntries.sort(Comparator.comparing(TrafficInfoEntry::getHourOfDay));
+//            for (TrafficInfoEntry tie: tmpEntries) {
+//                trafficInfoEntries.add(tie);
+//            }
         }
         //trafficInfoEntries.forEach(e->System.out.println(e.toString()));
         return trafficInfoEntries;
@@ -179,4 +186,12 @@ public class InfluxDBConnection {
     // insert traveltime,origin="telki",destination="szell" timeintraffic=21i
 
     ////SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse("2016-06-20T11:59:37.136244Z") = {Date@7679} "Mon Jun 20 12:01:53 BST 2016"
+
+    /*
+precision rfc3339
+select count(timeintraffic) AS dbperweek FROM traveltime WHERE "origin" = 'telki_center' AND "destination" = 'petofi_hid_budai' GROUP BY time(7d) fill(none)
+SELECT MEAN(timeintraffic) AS timeintraffic FROM traveltime WHERE "origin" = 'telki_center' AND "destination" = 'petofi_hid_budai' AND time >= '2020-05-10 23:59:59' AND time < '2020-05-18 00:00:00' GROUP BY time(10m) fill(none)
+
+     */
+
 }

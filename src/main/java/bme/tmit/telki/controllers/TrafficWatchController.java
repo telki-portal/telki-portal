@@ -1,7 +1,9 @@
 package bme.tmit.telki.controllers;
 
+import bme.tmit.telki.data.EntryService;
 import bme.tmit.telki.data.InfluxDBConnection;
 import bme.tmit.telki.data.TrafficInfoEntry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,9 @@ import static bme.tmit.telki.distance_matrix.DistanceMatrixClient.*;
  */
 @Controller
 public class TrafficWatchController {
+
+    @Autowired
+    private EntryService entryService;
 
     /**
      * Handles GET requests for the path "/" ("localhost:8080/")
@@ -72,7 +77,7 @@ public class TrafficWatchController {
         LOG.debug("GET '/'");
         List<TrafficInfoEntry> entries = InfluxDBConnection.getEntries();
         model.addAttribute("entries", entries);
-
+        model.addAttribute("weeklyCount", entryService.getWeeklyCount(entries));
         return "trafficgraph";
     }
 

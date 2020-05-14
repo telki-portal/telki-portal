@@ -43,6 +43,6 @@ http://localhost:8080/traffic
     > gradle bootRun OR gradlew bootRun
 2. Buildelt .jar fájlból:<br>
 Az api kulcsot tartalmazó secret.config fájlt a futtatott jar fájl mellé is be kell tenni.
-    > gradle build OR gradlew build<br>
+    > gradle build OR gradlew build OR gradlew bootJar<br>
     java -jar build\libs\telki-0.0.1-SNAPSHOT.jar
 

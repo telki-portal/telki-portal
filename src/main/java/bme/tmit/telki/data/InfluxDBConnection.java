@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static bme.tmit.telki.TelkiPortalApplication.LOG;
+import static java.lang.Integer.valueOf;
 
 /**
  * Singleton class
@@ -169,12 +170,10 @@ public class InfluxDBConnection {
                 tie.setOrigin(from.name());
                 tie.setDest(to.name());
                 tie.setDayOfWeek(String.valueOf(i));
-                trafficInfoEntries.add(tie);
-            }
-//            tmpEntries.sort(Comparator.comparing(TrafficInfoEntry::getHourOfDay));
-//            for (TrafficInfoEntry tie: tmpEntries) {
 //                trafficInfoEntries.add(tie);
-//            }
+            }
+            tmpEntries.sort(Comparator.comparing( entry -> Integer.valueOf(entry.getHourOfDay())));
+            trafficInfoEntries.addAll(tmpEntries);
         }
         //trafficInfoEntries.forEach(e->System.out.println(e.toString()));
         return trafficInfoEntries;
